@@ -1,0 +1,19 @@
+# Dependencies and local configuration
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Test output and diagnostics
+artifacts/
+playwright-report/
+test-results/
+coverage/
+*.log
+
+# OS / editor-generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+*.iml

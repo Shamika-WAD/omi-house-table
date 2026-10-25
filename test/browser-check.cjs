@@ -1,0 +1,13 @@
+const BASE=process.env.OMI_TEST_URL || 'http://127.0.0.1:3000';
+const {chromium}=require('@playwright/test');
+const path=require('node:path');
+const fs=require('node:fs');
+const artifactDir=path.join(__dirname,'../artifacts');
+fs.mkdirSync(artifactDir,{recursive:true});
+(async()=>{const browser=await chromium.launch({headless:true});const errors=[];const desktop=await browser.newContext({viewport:{width:1440,height:1050}});const page=await desktop.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(BASE + "");await page.waitForFunction(()=>document.querySelector('.status').textContent.includes('Ready'));await page.screenshot({path:path.join(artifactDir,'omi-landing.png'),fullPage:true});
+await page.fill('#name','Nimal');await page.locator('button[type=submit]').click();await page.waitForSelector('.code-big');const code=(await page.locator('.code-big').textContent()).trim();await page.locator('[data-seat="0"]').click();
+const mobiles=[];for(let i=1;i<4;i++){const ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});const p=await ctx.newPage();p.on('pageerror',e=>errors.push(e.message));await p.goto(BASE + "/?room="+code);await p.fill('#name',['','Amal','Saman','Kamal'][i]);await p.locator('button[type=submit]').click();await p.waitForSelector('.felt');await p.locator(`[data-seat="${i}"]`).click();mobiles.push(p);}
+await page.locator('[data-start]').click();await page.waitForSelector('[data-suit-action="trump"]');await page.locator('[data-suit="H"]').click();await mobiles[0].locator('[data-action="pass"]').click();await mobiles[2].locator('[data-action="pass"]').click();await mobiles[0].locator('[data-action="pass"]').click();await mobiles[2].locator('[data-action="pass"]').click();await page.waitForSelector('.card.playable');await page.screenshot({path:path.join(artifactDir,'omi-table.png'),fullPage:true});await mobiles[0].screenshot({path:path.join(artifactDir,'omi-mobile.png'),fullPage:true});
+for(const p of [page,...mobiles]){if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('Horizontal overflow');}
+await page.locator('.card.playable').first().click();await page.waitForFunction(()=>document.querySelectorAll('.played .card').length===1);await page.reload();await page.waitForSelector('.felt');if(await page.locator('.played .card').count()!==1)throw Error('Reconnect lost game');
+console.log(JSON.stringify({room:code,browserErrors:errors,viewports:'1440 desktop and 390 mobile',checks:'four player join, seat, deal, trump, pass, play, refresh, no overflow'},null,2));if(errors.length)throw Error(errors.join(';'));await browser.close();})().catch(e=>{console.error(e);process.exit(1)});

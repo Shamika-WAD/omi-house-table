@@ -1,0 +1,41 @@
+{
+  "name": "omi-house-table",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js",
+    "check": "node --check server.js && node --check game.js && node --check public/app.js && node --check public/pwa.js && node --check public/sw.js",
+    "test:browser": "node test/browser-suite.cjs"
+  },
+  "keywords": [
+    "omi",
+    "multiplayer",
+    "card-game",
+    "socket.io",
+    "pwa"
+  ],
+  "license": "ISC",
+  "description": "Private four-player Omi with household rules, QR joining, and home-screen installation.",
+  "dependencies": {
+    "express": "^5.3.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "socket.io-client": "^4.8.4"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shamika-WAD/omi-house-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Shamika-WAD/omi-house-table/issues"
+  },
+  "homepage": "https://omi-the-house-table.onrender.com/"
+}
